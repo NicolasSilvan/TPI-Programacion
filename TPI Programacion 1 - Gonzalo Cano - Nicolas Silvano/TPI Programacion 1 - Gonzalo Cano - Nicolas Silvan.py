@@ -76,8 +76,8 @@ def mostrar_estadisticas():
             case 1:
                 pais1, poblacion1 = mayor_poblacion(stock)
                 pais2, poblacion2 = menor_poblacion(stock)
-                print(f"El pais con mayor poblacion es {pais1} con {poblacion1} habitantes.")
-                print(f"El pais con menor poblacion es {pais2} con {poblacion2} habitantes.")
+                print(f"El pais con mayor poblacion es {pais1.title()} con {poblacion1} habitantes.")
+                print(f"El pais con menor poblacion es {pais2.title()} con {poblacion2} habitantes.")
             case 2:
                 promedio=promedio_poblacion(stock)
                 print(f"El promedio de población es {promedio} habitantes.")
@@ -85,10 +85,10 @@ def mostrar_estadisticas():
                 promedio=promedio_superficie(stock)
                 print(f"El promedio de superficie es {promedio} km.")
             case 4:
-                continente=input("Ingrese el continente: ")
+                continente=input("Ingrese el continente: ").lower()
                 if validar_continente(continente):
                     cantidad=cantidad_paises(stock, continente)
-                    print(f"Hay {cantidad} paises en {continente}.")
+                    print(f"Hay {cantidad} paises en {continente.title()}.")
                 else:
                     print("Continente no encontrado en los datos.")
             case 5:
@@ -173,7 +173,6 @@ def ingresar_pais():
         print(f"== Continente : {continente}\t ==")
         input()
     
-
 def guardar_paises(pais): #sobreescribo la informacion del archivo, y creo los headers de nuevo
     with open(NOMBRE_ARCHIVO, "w", newline="", encoding="utf-8") as archivo:
         escritor = csv.DictWriter(archivo, fieldnames=["nombre", "poblacion", "superficie", "continente"])
@@ -318,26 +317,29 @@ def actualizar_poblacion_superficie():
             
             break
 
-def consultar_stock():
-    titulo = input("Ingrese el nombre del titulo a consultar: ")
+def buscar_pais():
+    busca = input("Ingrese el nombre del pais que busca: ").strip().lower()
 
-    if not titulo: #valido que el titulo no este vacio
-        print("El titulo no puede estar vacio!")
+    if not busca: #valido que el pais no este vacio
+        print("El pais no puede estar vacio!")
         input()
         return
     
-    catalogo = obtener_catalogo()
+    if not existe_pais(busca):
+        print("Ese pais no se encuentra en los datos o no existe.")
 
-    for titulos in catalogo:
-        if titulos["TITULO"].lower() == titulo.lower():
-            print(f"TITULO : {titulos["TITULO"]} - CANTIDAD : {titulos["CANTIDAD"]}")
+    paises = obtener_paises()
+
+    for pais in paises:
+        if pais["nombre"].lower() == busca:
+            print(f"Nombre : {pais["nombre"]} - Población : {pais["poblacion"]} - Superficie : {pais["superficie"]} - Continente : {pais["continente"]}")
             input()
             break
 
 def consultar_agotados():
-    catalogo = obtener_catalogo()
+    paises = obtener_paises()
 
-    for titulos in catalogo:
+    for titulo in catalogo:
         if titulos["CANTIDAD"] == 0: #recorro la lista de catalogo buscando los que tengan CANTIDAD = 0
             print("=== Titulos sin stock ===")
             print(f"TITULO : {titulos["TITULO"]}")
@@ -367,13 +369,13 @@ def mostrar_menu():
             case "2":
                 actualizar_poblacion_superficie()
             case "3":
-                mostrar_catalogo() 
+                buscar_pais()
             case "4":
                 consultar_stock()
             case "5":
                 consultar_agotados()
             case "6":
-                ingresar_pais()
+                mostrar_estadisticas()
             case "7":
                 print("Gracias por usar nuestro programa!")
                 input()
