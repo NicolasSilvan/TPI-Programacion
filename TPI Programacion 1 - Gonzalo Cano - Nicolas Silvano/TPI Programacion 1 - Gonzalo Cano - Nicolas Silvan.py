@@ -30,7 +30,8 @@ def menor_poblacion(stock):
         poblacion=pais["poblacion"]
         if guardado is None or poblacion < guardado:
             guardado=pais["poblacion"]
-    return pais, guardado
+            guardado2=pais["nombre"]
+    return guardado2, guardado
 
 def mayor_poblacion(stock):
     guardado=None
@@ -38,7 +39,8 @@ def mayor_poblacion(stock):
         poblacion=pais["poblacion"]
         if guardado is None or poblacion > guardado:
             guardado=pais["poblacion"]
-    return pais, guardado
+            guardado2=pais["nombre"]
+    return guardado2, guardado
 
 def promedio_poblacion(stock):
     suma=0
@@ -71,30 +73,37 @@ def mostrar_estadisticas():
         print("3) Promedio de superficie")
         print("4) Cantidad de paises por continente")
         print("5) Salir")
-        eleccion=input("¿Que opcion desea? ")
+        eleccion=int(input("¿Que opcion desea? "))
         match eleccion:
             case 1:
                 pais1, poblacion1 = mayor_poblacion(stock)
                 pais2, poblacion2 = menor_poblacion(stock)
-                print(f"El pais con mayor poblacion es {pais1.title()} con {poblacion1} habitantes.")
-                print(f"El pais con menor poblacion es {pais2.title()} con {poblacion2} habitantes.")
+                print(f"El pais con mayor poblacion es {pais1} con {poblacion1} habitantes.")
+                print(f"El pais con menor poblacion es {pais2} con {poblacion2} habitantes.")
+                input()
             case 2:
                 promedio=promedio_poblacion(stock)
                 print(f"El promedio de población es {promedio} habitantes.")
+                input()
             case 3:
                 promedio=promedio_superficie(stock)
                 print(f"El promedio de superficie es {promedio} km.")
+                input()
             case 4:
-                continente=input("Ingrese el continente: ").lower()
+                continente=input("Ingrese el continente: ")
                 if validar_continente(continente):
                     cantidad=cantidad_paises(stock, continente)
-                    print(f"Hay {cantidad} paises en {continente.title()}.")
+                    print(f"Hay {cantidad} paises en {continente}.")
                 else:
                     print("Continente no encontrado en los datos.")
+                input()
             case 5:
+                print("Saliendo...")
+                input()
                 break
             case _:
                 print("Opcion incorrecta.")
+                input()
 
 def existe_pais(pais):
     paises_archivo = obtener_paises()
@@ -179,91 +188,6 @@ def guardar_paises(pais): #sobreescribo la informacion del archivo, y creo los h
         escritor.writeheader()
         escritor.writerow(pais)
 
-def devolucion():
-    titulo = input("Ingrese el nombre del titulo a devolver: ")
-
-    if not titulo: #valido que el titulo no este vacio
-        print("El titulo no puede estar vacio!")
-        input()
-        return
-    
-    catalogo = obtener_catalogo()
-
-    for titulos in catalogo:
-        if titulos["TITULO"].lower() == titulo.lower(): #busco que exista el titulo adentro del catalogo
-            cantidad = input("Ingrese la cantidad de ejemplares a devolver: ")
-
-            if not validar_cantidad(cantidad): #valido que la cantidad no sea 0 o negativo
-                print("La cantidad no es valida!")
-                input()
-                return
-            
-            titulos["CANTIDAD"] += int(cantidad) #le sumo la cantidad al indice
-
-            guardar_titulos(catalogo)
-            print("Titulo devuelto correctamente!")
-            input()
-            
-            break
-    else:
-        print(f"El titulo {titulo} no se ha encontrado!")
-        input()
-
-
-def prestamo():
-    titulo = input("Ingrese el nombre del titulo a prestar: ")
-
-    if not titulo:
-        print("El titulo no puede estar vacio!")
-        input()
-        return
-    
-    catalogo = obtener_catalogo()
-
-    for titulos in catalogo:
-        if titulos["TITULO"].lower() == titulo.lower(): #busco que exista el titulo adentro del catalogo
-            cantidad = input("Ingrese la cantidad de ejemplares a prestar: ")
-
-            if not validar_cantidad(cantidad): #valido que la cantidad no sea 0 o negativo
-                print("La cantidad no es valida!")
-                input()
-                return
-            
-            if titulos["CANTIDAD"] == 0:
-                print("No quedan mas ejemplares de este titulo en stock!")
-                input()
-                break
-
-            if (titulos["CANTIDAD"] - int(cantidad)) < 0:
-                print("No puede llevarse mas titulos de los que hay en stock!")
-                input()
-                break
-
-            titulos["CANTIDAD"] -= int(cantidad) #le resto la cantidad al indice
-
-            guardar_titulos(catalogo)
-            print("Titulo prestado correctamente!")
-            input()
-            
-            break
-    else:
-        print(f"El titulo {titulo} no se ha encontrado!")
-        input()
-
-def actualizar_ejemplares():
-    
-    devo_presta = input("Es una devolucion (D) o un prestamo (P): (D/P)").strip()
-    
-    match devo_presta.upper(): #hago un match case para las dos opciones (prestamo/devolucion)
-        case "D":
-            devolucion()
-        case "P":
-            prestamo()
-        case _:
-            print("Opcion invalida!")
-            input()
-            return
-
 def actualizar_poblacion_superficie():
     print("=== ACTUALIZAR POBLACION Y SUPERFICIE ===")
     pais_nombre = input("Ingrese el nombre del pais a actualizar: ")
@@ -336,19 +260,6 @@ def buscar_pais():
             input()
             break
 
-def consultar_agotados():
-    paises = obtener_paises()
-
-    for titulo in catalogo:
-        if titulos["CANTIDAD"] == 0: #recorro la lista de catalogo buscando los que tengan CANTIDAD = 0
-            print("=== Titulos sin stock ===")
-            print(f"TITULO : {titulos["TITULO"]}")
-            input()
-            break
-    else:
-        print("No se encontraron titulos agotados!")
-        input()
-
 def mostrar_menu():
     opcion = ""
     while opcion != 87: #mientras la opcion no sea 7 el programa va a seguir ejecutandose
@@ -371,9 +282,9 @@ def mostrar_menu():
             case "3":
                 buscar_pais()
             case "4":
-                consultar_stock()
+                pass
             case "5":
-                consultar_agotados()
+                pass
             case "6":
                 mostrar_estadisticas()
             case "7":
