@@ -87,7 +87,7 @@ def mostrar_estadisticas():
                 input()
             case 3:
                 promedio=promedio_superficie(stock)
-                print(f"El promedio de superficie es {promedio} km.")
+                print(f"El promedio de superficie es {promedio} km2.")
                 input()
             case 4:
                 continente=input("Ingrese el continente: ")
@@ -102,7 +102,7 @@ def mostrar_estadisticas():
                 input()
                 break
             case _:
-                print("Opcion incorrecta.")
+                print("Opcion invalida!.")
                 input()
 
 def existe_pais(pais):
@@ -132,6 +132,12 @@ def validar_continente(continente):
     return continente.lower() in continentes #si el continente ingresado existe dentro de la lista, devuelve True, caso contrario devuelve False
 
 def agregar_pais(pais): #esta funcion agrega paises nuevos sin sobreescribir el archivo
+    if os.path.getsize(NOMBRE_ARCHIVO) == 0: #si el archivo esta vacio, agrego la informacion con los headers
+        with open(NOMBRE_ARCHIVO, "w", newline="", encoding="utf-8") as archivo:
+            escritor = csv.DictWriter(archivo, fieldnames=["nombre", "poblacion", "superficie", "continente"])
+            escritor.writeheader()
+            escritor.writerow(pais)
+
     with open(NOMBRE_ARCHIVO, "a", newline="", encoding="utf-8") as archivo:
         escritor = csv.DictWriter(archivo, fieldnames=["nombre", "poblacion", "superficie", "continente"])
         escritor.writerow(pais)
@@ -177,20 +183,22 @@ def ingresar_pais():
         agregar_pais({"nombre": pais, "poblacion": poblacion, "superficie": superficie, "continente": continente})
 
         print(f"El pais {pais} se agrego al archivo con los siguientes datos:") #Muestro de manera ordenada todos los datos ingresados al archivo
-        print(f"== Poblacion : {poblacion}\t==")
-        print(f"== Superficie : {superficie}\t==")
-        print(f"== Continente : {continente}\t ==")
+        print(f"== Poblacion : {poblacion}")
+        print(f"== Superficie : {superficie}")
+        print(f"== Continente : {continente}")
         input()
     
-def guardar_paises(pais): #sobreescribo la informacion del archivo, y creo los headers de nuevo
+def guardar_paises(paises): #sobreescribo la informacion del archivo, y creo los headers de nuevo
     with open(NOMBRE_ARCHIVO, "w", newline="", encoding="utf-8") as archivo:
         escritor = csv.DictWriter(archivo, fieldnames=["nombre", "poblacion", "superficie", "continente"])
         escritor.writeheader()
-        escritor.writerow(pais)
+        escritor.writerows(paises)
 
 def actualizar_poblacion_superficie():
-    print("=== ACTUALIZAR POBLACION Y SUPERFICIE ===")
+    print("=== Actualizar Poblacion Y Superficie ===")
     pais_nombre = input("Ingrese el nombre del pais a actualizar: ")
+
+    encontrado = True #agrego esta variable para verificar que se encontro el pais en el archivo
 
     if not pais_nombre: #valido que el pais no este vacio
         print("El pais no puede estar vacio!")
@@ -199,8 +207,15 @@ def actualizar_poblacion_superficie():
     
     paises = obtener_paises()
 
+    if not paises: #valido que el archivo no este vacio
+        print("El archivo no contiene ningun pais.")
+        input()
+        return
+
     for pais in paises:
         if pais["nombre"].lower() == pais_nombre.lower(): #busco que exista el pais adentro del archivo
+
+            encontrado = True
 
             print("=================================================================") #muestro los datos actuales del pais a modificar
             print(f"Poblacion total actual de {pais_nombre} = {pais["poblacion"]}")
@@ -219,8 +234,8 @@ def actualizar_poblacion_superficie():
                     
                     pais["poblacion"] = int(poblacion) #le asigno el nuevo numero de poblacion al archivo
 
-                    guardar_paises(pais)
-                    print("Ejemplares actualizados!")
+                    guardar_paises(paises)
+                    print("La poblacion fue actualizada!")
                     input()
                 case "s": #superficie
                     superficie = input("Ingrese el numero de superficie en KM2 a actualizar: ")
@@ -232,37 +247,202 @@ def actualizar_poblacion_superficie():
                     
                     pais["superficie"] = int(superficie) #le asigno el nuevo numero de superficie al archivo
                 
-                    guardar_paises(pais)
-                    print("Ejemplares actualizados!")
+                    guardar_paises(paises)
+                    print("La superficie fue actualizada!")
                     input()
                 case _:
                     print("Opcion invalida!")
+                    input()
                     return
             
             break
+        else:
+            encontrado = False
+
+    if not encontrado:
+        print(f"El pais {pais_nombre} no se encuentra en el archivo!")
+        input()
+        return
 
 def buscar_pais():
-    busca = input("Ingrese el nombre del pais que busca: ").strip().lower()
+    print("=== BUSCAR PAISES ===")
+    pais_busqueda = input("Ingrese el nombre del pais que busca: ").strip().lower()
 
-    if not busca: #valido que el pais no este vacio
+    if not pais_busqueda: #valido que el pais no este vacio
         print("El pais no puede estar vacio!")
         input()
         return
     
-    if not existe_pais(busca):
+    if not existe_pais(pais_busqueda): #valido que el pais exista en el archivo
         print("Ese pais no se encuentra en los datos o no existe.")
+        input()
+        return
 
     paises = obtener_paises()
 
-    for pais in paises:
-        if pais["nombre"].lower() == busca:
-            print(f"Nombre : {pais["nombre"]} - Población : {pais["poblacion"]} - Superficie : {pais["superficie"]} - Continente : {pais["continente"]}")
+    for pais in paises: #recorro el archivo en busqueda de la info del pais a buscar
+        if pais["nombre"].lower() == pais_busqueda:
+            print(f"Nombre : {pais["nombre"]} \nPoblación : {pais["poblacion"]} \nSuperficie : {pais["superficie"]} \nContinente : {pais["continente"]}")
             input()
             break
 
+def filtrar_paises():
+    print("=== FILTRAR PAISES ===")
+    filtro = input("Desea filtrar el filtro por:\n(C) Continente\n(P) Rango de Poblacion\n(S) Rango de Superficie\n(C/P/S):").strip()
+
+    paises = obtener_paises() #voy a buscar los paises por fuera del match asi los puedo usar en todos los case
+
+    match filtro.lower(): #hago un match case para cada filtro
+        case "c":
+            print("=== FILTRO CONTINENTE ===")
+            continente = input("Ingrese el continente a filtrar: ").strip()
+
+            if not validar_continente(continente.lower()): #valido que el continente sea valido y exista
+                print("El continente ingresado no existe o esta vacio! Debe ingresar un continente valido.")
+                input()
+                return
+            
+            paises_filtrados = [p for p in paises if p["continente"].lower() == continente.lower()] #filtro usando list comprehension
+            
+            if not paises_filtrados: #si el filtro queda vacio es por que no hay ninguno en el archivo
+                print(f"No se encontro ningun pais en el archivo que pertenezca al continente {continente}!")
+                input()
+                return
+            
+            print("=======================================")
+            print(f"Paises del continente {continente}:")
+            print("=======================================")
+        case "p":
+            print("=== FILTRO RANGO DE POBLACION ===")
+            poblacion_desde = input("Filtrar rango de poblacion DESDE: ")
+
+            if not validar_poblacion_superficie(poblacion_desde): #reviso que sea un valor valido y no >= 0
+                print("El numero de poblacion no es valido! Debe ingresar un valor mayor que 0.")
+                input()
+                return
+            
+            poblacion_hasta = input("Filtrar rango de poblacion HASTA: ") #reviso que sea un valor valido y no >= 0
+
+            if not validar_poblacion_superficie(poblacion_hasta):
+                print("El numero de poblacion no es valido! Debe ingresar un valor mayor que 0.")
+                input()
+                return
+
+            poblacion_desde = int(poblacion_desde)
+            poblacion_hasta = int(poblacion_hasta)
+
+            if poblacion_desde > poblacion_hasta: #valido que el rango desde no sea mayor que el hasta
+                print("El rango DESDE no puede ser mayor al rango HASTA!")
+                input()
+                return
+            
+            paises_filtrados = [p for p in paises if p["poblacion"] >= poblacion_desde and p["poblacion"] <= poblacion_hasta] #filtro usando list comprehension
+
+            if not paises_filtrados: #si el filtro queda vacio es por que no hay ninguno en el archivo
+                print(f"No se encontro ningun pais en el archivo que este en ese rango de poblacion!")
+                input()
+                return
+            
+            print("======================================")
+            print(f"Paises dentro del rango de poblacion:")
+            print("=======================================")
+        case "s":
+            print("=== FILTRO RANGO DE SUPERFICIE ===")
+
+            superficie_desde = input("Filtrar rango de Superficie DESDE: ")
+
+            if not validar_poblacion_superficie(superficie_desde): #reviso que sea un valor valido y no >= 0
+                print("El numero de superficie no es valido! Debe ingresar un valor mayor que 0.")
+                input()
+                return
+            
+            superficie_hasta = input("Filtrar rango de superficie HASTA: ") #reviso que sea un valor valido y no >= 0
+
+            if not validar_poblacion_superficie(superficie_hasta):
+                print("El numero de superficie no es valido! Debe ingresar un valor mayor que 0.")
+                input()
+                return
+
+            superficie_desde = int(superficie_desde)
+            superficie_hasta = int(superficie_hasta)
+
+            if superficie_desde > superficie_hasta: #valido que el rango desde no sea mayor que el hasta
+                print("El rango DESDE no puede ser mayor al rango HASTA!")
+                input()
+                return
+            
+            paises_filtrados = [p for p in paises if p["superficie"] >= superficie_desde and p["superficie"] <= superficie_hasta] #filtro usando list comprehension
+
+            if not paises_filtrados: #si el filtro queda vacio es por que no hay ninguno en el archivo
+                print(f"No se encontro ningun pais en el archivo que este en ese rango de superficie!")
+                input()
+                return
+            
+            print("=======================================")
+            print(f"Paises dentro del rango de superficie:")
+            print("=======================================")
+        case _:
+            print("Opcion invalida!")
+            input()
+            return
+
+    for pais in paises_filtrados: #hago el for de los paises filtrados afuera para no repetirlo por cada filtro
+        print(f"Pais = {pais["nombre"]} - Poblacion = {pais["poblacion"]} - Superficie = {pais["superficie"]} - Continente = {pais["continente"]}")
+    
+    input()
+
+def ordenar_paises():
+    print("=== ORDENAR PAISES ===")
+
+    orden = input("Desea ordenar los pasies por\n(N) Nombre\n(P) Poblacion\n(S) Superficie(Ascendente/Descendente)\n(N/P/S):").strip()
+
+    paises = obtener_paises() #voy a buscar los paises por fuera del match asi los puedo usar en todos los case
+
+    match orden.lower():
+        case "n":
+            paises_ordenados = sorted(paises, key=lambda p: p["nombre"].lower()) #ordeno la lista por el campo 'nombre'
+
+            print("=== Paises ordenados por orden alfabetico ===")
+        case "p":
+            asc_desc = input("Desea ordenar la poblacion de manera ASCENDENTE(A) o DESCENDENTE(D): (A/D)").strip()
+
+            match asc_desc.lower():
+                case "a":
+                    paises_ordenados = sorted(paises, key=lambda p: p["poblacion"])
+
+                    print("=== Paises ordenados por poblacion ascendente ===")
+                case "d":
+                    paises_ordenados = sorted(paises, key=lambda p: p["poblacion"], reverse=True)
+
+                    print("=== Paises ordenados por poblacion descendente ===")
+                case _:
+                    print("Opcion invalida!")
+                    input()
+                    return
+        case "s":
+            asc_desc = input("Desea ordenar la superficie de manera ASCENDENTE(A) o DESCENDENTE(D): (A/D)").strip()
+
+            match asc_desc.lower():
+                case "a":
+                    pass
+                case "d":
+                    pass
+                case _:
+                    print("Opcion invalida!")
+                    input()
+                    return
+        case _:
+            print("Opcion invalida!")
+            input()
+            return
+
+    for pais in paises_ordenados:    
+        print(f"Pais = {pais["nombre"]} - Poblacion = {pais["poblacion"]} - Superficie = {pais["superficie"]} - Continente = {pais["continente"]}")
+    input()
+
 def mostrar_menu():
     opcion = ""
-    while opcion != 87: #mientras la opcion no sea 7 el programa va a seguir ejecutandose
+    while opcion != 7: #mientras la opcion no sea 7 el programa va a seguir ejecutandose
         print("\n==== MENU PAISES ====")
         print("1) Ingresar pais")
         print("2) Actualizar datos de poblacion y superficie")
@@ -282,9 +462,9 @@ def mostrar_menu():
             case "3":
                 buscar_pais()
             case "4":
-                pass
+                filtrar_paises()
             case "5":
-                pass
+                ordenar_paises()
             case "6":
                 mostrar_estadisticas()
             case "7":
