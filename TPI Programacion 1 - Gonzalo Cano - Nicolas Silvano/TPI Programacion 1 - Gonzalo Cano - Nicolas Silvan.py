@@ -394,7 +394,7 @@ def filtrar_paises():
 def ordenar_paises():
     print("=== ORDENAR PAISES ===")
 
-    orden = input("Desea ordenar los pasies por\n(N) Nombre\n(P) Poblacion\n(S) Superficie(Ascendente/Descendente)\n(N/P/S):").strip()
+    orden = input("Desea ordenar los paises por:\n(N) Nombre\n(P) Poblacion\n(S) Superficie(Ascendente/Descendente)\n(N/P/S):").strip()
 
     paises = obtener_paises() #voy a buscar los paises por fuera del match asi los puedo usar en todos los case
 
@@ -424,9 +424,13 @@ def ordenar_paises():
 
             match asc_desc.lower():
                 case "a":
-                    pass
+                    paises_ordenados = sorted(paises, key=lambda p: p["superficie"])
+
+                    print("=== Paises ordenados por superficie ascendente ===")
                 case "d":
-                    pass
+                    paises_ordenados = sorted(paises, key=lambda p: p["superficie"], reverse=True)
+
+                    print("=== Paises ordenados por superficie descendente ===")
                 case _:
                     print("Opcion invalida!")
                     input()
