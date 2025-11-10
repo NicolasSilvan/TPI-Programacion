@@ -24,48 +24,48 @@ def obtener_paises():
 
         return paises #devuelvo la lista con la info del archivo cargada
 
-def menor_poblacion(stock):
+def menor_poblacion(paises):
     guardado=None
-    for pais in stock:
+    for pais in paises:
         poblacion=pais["poblacion"]
         if guardado is None or poblacion < guardado:
             guardado=pais["poblacion"]
             guardado2=pais["nombre"]
     return guardado2, guardado
 
-def mayor_poblacion(stock):
+def mayor_poblacion(paises):
     guardado=None
-    for pais in stock:
+    for pais in paises:
         poblacion=pais["poblacion"]
         if guardado is None or poblacion > guardado:
             guardado=pais["poblacion"]
             guardado2=pais["nombre"]
     return guardado2, guardado
 
-def promedio_poblacion(stock):
+def promedio_poblacion(paises):
     suma=0
-    for pais in stock:
+    for pais in paises:
         poblacion=pais["poblacion"]
         suma+=poblacion
-    return suma/len(stock)      
+    return suma/len(paises)      
 
-def promedio_superficie(stock):
+def promedio_superficie(paises):
     suma=0
-    for pais in stock:
+    for pais in paises:
         superficie=pais["superficie"]
         suma+=superficie
-    return suma/len(stock) 
+    return suma/len(paises) 
 
-def cantidad_paises(stock, continente):
+def cantidad_paises(paises, continente):
     cantidad=0
-    for pais in stock:
+    for pais in paises:
         if pais["continente"] == continente:
             cantidad+=1
     return cantidad
 
 def mostrar_estadisticas():
     print("=== Estadisticas ===")
-    stock = obtener_paises() #llamo a la funcion que carga la info en el archivo
+    paises = obtener_paises() #llamo a la funcion que carga la info en el archivo
     while True:
         print("== Opciones ==")
         print("1) Pais con mayor y menor población")
@@ -76,23 +76,23 @@ def mostrar_estadisticas():
         eleccion=int(input("¿Que opcion desea? "))
         match eleccion:
             case 1:
-                pais1, poblacion1 = mayor_poblacion(stock)
-                pais2, poblacion2 = menor_poblacion(stock)
+                pais1, poblacion1 = mayor_poblacion(paises)
+                pais2, poblacion2 = menor_poblacion(paises)
                 print(f"El pais con mayor poblacion es {pais1} con {poblacion1} habitantes.")
                 print(f"El pais con menor poblacion es {pais2} con {poblacion2} habitantes.")
                 input()
             case 2:
-                promedio=promedio_poblacion(stock)
+                promedio=promedio_poblacion(paises)
                 print(f"El promedio de población es {promedio} habitantes.")
                 input()
             case 3:
-                promedio=promedio_superficie(stock)
+                promedio=promedio_superficie(paises)
                 print(f"El promedio de superficie es {promedio} km2.")
                 input()
             case 4:
                 continente=input("Ingrese el continente: ")
                 if validar_continente(continente):
-                    cantidad=cantidad_paises(stock, continente)
+                    cantidad=cantidad_paises(paises, continente)
                     print(f"Hay {cantidad} paises en {continente}.")
                 else:
                     print("Continente no encontrado en los datos.")
@@ -149,6 +149,11 @@ def ingresar_pais():
 
     for i in range(paises_a_ingresar):
         pais = input("Ingrese el nombre del pais: ")
+
+        if pais.isdigit():
+            print("Ingrese un pais valido!")
+            input()
+            return
 
         if existe_pais(pais): #valido que el pais ingresado no exista
             print(f"El pais {pais} ya existe en el archivo.")
