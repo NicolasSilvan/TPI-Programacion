@@ -9,6 +9,7 @@ Universidad Tecnológica Nacional - Tecnicatura Universitaria en Programación a
 # Integrantes
 
 Gonzalo Cano - Comisión 3
+
 Nicolas Silvan - Comisión 13
 
 # Datos de Profesores
@@ -19,7 +20,9 @@ Brian Esteban Lara Campos - Comisión 3
 
 /
 ├── TPI Programacion 1 - Gonzalo Cano - Nicolas Silvan/
+
 │   └── TPI Programacio 1 - Gonzalo Cano - Nicolas Silvan.py
+
 └── README.md
 
 El CSV se genera en la misma carpeta donde se ejecuta el script.
@@ -27,9 +30,13 @@ El CSV se genera en la misma carpeta donde se ejecuta el script.
 # Instrucciones de ejecución
 
 **1**-Clonar el repositorio o descargar los archivos.
+
 **2**-Asegurarse de que el archivo principal esté en la carpeta:
+
        └── TPI Programacion 1 - Gonzalo Cano - Nicolas Silvan
+       
 **3**-Ejecutarlo desde la consola con:
+       
        └── python "TPI Programacio 1 - Gonzalo Cano - Nicolas SIlvan.py"
 
 El sistema creará automáticamente el archivo "paises.csv" si no existe.
@@ -37,14 +44,19 @@ El sistema creará automáticamente el archivo "paises.csv" si no existe.
 # Uso de librerías
 
 Librerías estándar:
+
 -csv
+
 -os
 
 # Links a video y repositorio
 
 **Video explicativo**:
+
 └── https://drive.google.com/file/d/1NALILlx_j6sTpHHhzY3ZC34-u37p6zTP/view?usp=sharing
+
 **Repositorio**:
+
 └── https://github.com/NicolasSilvan/TPI-Programacion
 
 # Ejemplos de entrada y salida
