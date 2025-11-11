@@ -16,12 +16,14 @@ Nicolas Silvan - Comisión 13
 
 Brian Esteban Lara Campos - Comisión 3
 
+Miguel Barrera Oltra - Comisión 13
+
 # Estructura del repositorio
 
 /
 ├── TPI Programacion 1 - Gonzalo Cano - Nicolas Silvan/
 
-│   └── TPI Programacio 1 - Gonzalo Cano - Nicolas Silvan.py
+│   └── TPI Programacion 1 - Gonzalo Cano - Nicolas Silvan.py
 
 └── README.md
 
